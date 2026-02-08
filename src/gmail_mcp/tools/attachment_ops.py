@@ -6,8 +6,8 @@ import base64
 import os
 from typing import Annotated
 
-from gmail_mcp.server import mcp
 from gmail_mcp.gmail_service import get_gmail_service
+from gmail_mcp.server import mcp
 
 
 def _find_attachment_filename(part: dict, attachment_id: str) -> str | None:
@@ -26,8 +26,12 @@ def _find_attachment_filename(part: dict, attachment_id: str) -> str | None:
 def download_attachment(
     message_id: Annotated[str, "ID of the email message containing the attachment"],
     attachment_id: Annotated[str, "ID of the attachment to download"],
-    filename: Annotated[str | None, "Filename to save as (uses original if not provided)"] = None,
-    save_path: Annotated[str | None, "Directory to save the attachment (defaults to current directory)"] = None,
+    filename: Annotated[
+        str | None, "Filename to save as (uses original if not provided)"
+    ] = None,
+    save_path: Annotated[
+        str | None, "Directory to save the attachment (defaults to current directory)"
+    ] = None,
 ) -> str:
     """Download an email attachment to a specified location."""
     gmail = get_gmail_service()

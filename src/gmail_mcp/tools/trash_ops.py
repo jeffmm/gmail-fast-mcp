@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from gmail_mcp.server import mcp
 from gmail_mcp.gmail_service import get_gmail_service
+from gmail_mcp.server import mcp
 from gmail_mcp.tools.batch_ops import process_batches
 
 
@@ -22,7 +22,9 @@ def trash_email(
 @mcp.tool()
 def batch_trash_emails(
     message_ids: Annotated[list[str], "List of message IDs to trash"],
-    batch_size: Annotated[int | None, "Number of messages per batch (default: 50)"] = 50,
+    batch_size: Annotated[
+        int | None, "Number of messages per batch (default: 50)"
+    ] = 50,
 ) -> str:
     """Move multiple emails to trash in batches."""
     gmail = get_gmail_service()

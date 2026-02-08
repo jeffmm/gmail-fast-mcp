@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import Annotated, Callable, TypeVar
 
-from gmail_mcp.server import mcp
 from gmail_mcp.gmail_service import get_gmail_service
+from gmail_mcp.server import mcp
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -43,9 +43,15 @@ def process_batches(
 @mcp.tool()
 def batch_modify_emails(
     message_ids: Annotated[list[str], "List of message IDs to modify"],
-    add_label_ids: Annotated[list[str] | None, "Label IDs to add to all messages"] = None,
-    remove_label_ids: Annotated[list[str] | None, "Label IDs to remove from all messages"] = None,
-    batch_size: Annotated[int | None, "Number of messages per batch (default: 50)"] = 50,
+    add_label_ids: Annotated[
+        list[str] | None, "Label IDs to add to all messages"
+    ] = None,
+    remove_label_ids: Annotated[
+        list[str] | None, "Label IDs to remove from all messages"
+    ] = None,
+    batch_size: Annotated[
+        int | None, "Number of messages per batch (default: 50)"
+    ] = 50,
 ) -> str:
     """Modify labels for multiple emails in batches."""
     gmail = get_gmail_service()
@@ -59,15 +65,11 @@ def batch_modify_emails(
     def _modify_batch(batch: list[str]) -> list[dict]:
         results = []
         for mid in batch:
-            gmail.users().messages().modify(
-                userId="me", id=mid, body=body
-            ).execute()
+            gmail.users().messages().modify(userId="me", id=mid, body=body).execute()
             results.append({"messageId": mid, "success": True})
         return results
 
-    successes, failures = process_batches(
-        message_ids, batch_size or 50, _modify_batch
-    )
+    successes, failures = process_batches(message_ids, batch_size or 50, _modify_batch)
 
     lines = [
         "Batch label modification complete.",

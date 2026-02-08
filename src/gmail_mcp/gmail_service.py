@@ -10,8 +10,12 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 
 CONFIG_DIR = Path.home() / ".gmail-mcp"
-OAUTH_PATH = Path(os.environ.get("GMAIL_OAUTH_PATH", CONFIG_DIR / "gcp-oauth.keys.json"))
-CREDENTIALS_PATH = Path(os.environ.get("GMAIL_CREDENTIALS_PATH", CONFIG_DIR / "credentials.json"))
+OAUTH_PATH = Path(
+    os.environ.get("GMAIL_OAUTH_PATH", CONFIG_DIR / "gcp-oauth.keys.json")
+)
+CREDENTIALS_PATH = Path(
+    os.environ.get("GMAIL_CREDENTIALS_PATH", CONFIG_DIR / "credentials.json")
+)
 SCOPES = [
     "https://www.googleapis.com/auth/gmail.modify",
     "https://www.googleapis.com/auth/gmail.settings.basic",
@@ -32,9 +36,17 @@ def get_gmail_service():
             "Run 'uv run python -m gmail_mcp auth' first."
         )
 
-    creds = Credentials.from_authorized_user_info(
-        json.loads(CREDENTIALS_PATH.read_text()), SCOPES
-    )
+    token_data = json.loads(CREDENTIALS_PATH.read_text())
+
+    # Node.js OAuth libraries save tokens without client_id/client_secret.
+    # Merge them from the OAuth keys file if missing.
+    if "client_id" not in token_data and OAUTH_PATH.exists():
+        oauth_keys = json.loads(OAUTH_PATH.read_text())
+        client_info = oauth_keys.get("installed") or oauth_keys.get("web", {})
+        token_data["client_id"] = client_info.get("client_id", "")
+        token_data["client_secret"] = client_info.get("client_secret", "")
+
+    creds = Credentials.from_authorized_user_info(token_data, SCOPES)
 
     if creds.expired and creds.refresh_token:
         creds.refresh(Request())

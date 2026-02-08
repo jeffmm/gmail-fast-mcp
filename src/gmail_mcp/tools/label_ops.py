@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from gmail_mcp.server import mcp
 from gmail_mcp.gmail_service import get_gmail_service
+from gmail_mcp.server import mcp
 
 
 @mcp.tool()
@@ -35,7 +35,9 @@ def list_email_labels() -> str:
 def create_label(
     name: Annotated[str, "Name for the new label"],
     message_list_visibility: Annotated[str | None, "show or hide"] = None,
-    label_list_visibility: Annotated[str | None, "labelShow, labelShowIfUnread, or labelHide"] = None,
+    label_list_visibility: Annotated[
+        str | None, "labelShow, labelShowIfUnread, or labelHide"
+    ] = None,
 ) -> str:
     """Create a new Gmail label."""
     gmail = get_gmail_service()
@@ -48,7 +50,9 @@ def create_label(
         result = gmail.users().labels().create(userId="me", body=body).execute()
     except Exception as e:
         if "already exists" in str(e):
-            raise ValueError(f'Label "{name}" already exists. Use a different name.') from e
+            raise ValueError(
+                f'Label "{name}" already exists. Use a different name.'
+            ) from e
         raise
 
     return (
@@ -64,7 +68,9 @@ def update_label(
     id: Annotated[str, "ID of the label to update"],
     name: Annotated[str | None, "New name for the label"] = None,
     message_list_visibility: Annotated[str | None, "show or hide"] = None,
-    label_list_visibility: Annotated[str | None, "labelShow, labelShowIfUnread, or labelHide"] = None,
+    label_list_visibility: Annotated[
+        str | None, "labelShow, labelShowIfUnread, or labelHide"
+    ] = None,
 ) -> str:
     """Update an existing Gmail label."""
     gmail = get_gmail_service()
@@ -108,7 +114,9 @@ def delete_label(
 def get_or_create_label(
     name: Annotated[str, "Name of the label to get or create"],
     message_list_visibility: Annotated[str | None, "show or hide"] = None,
-    label_list_visibility: Annotated[str | None, "labelShow, labelShowIfUnread, or labelHide"] = None,
+    label_list_visibility: Annotated[
+        str | None, "labelShow, labelShowIfUnread, or labelHide"
+    ] = None,
 ) -> str:
     """Get an existing label by name or create it if it doesn't exist."""
     gmail = get_gmail_service()

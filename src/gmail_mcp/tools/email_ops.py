@@ -6,14 +6,14 @@ import base64
 import math
 from typing import Annotated
 
-from gmail_mcp.server import mcp
-from gmail_mcp.gmail_service import get_gmail_service
 from gmail_mcp.email_utils import create_email_message
-
+from gmail_mcp.gmail_service import get_gmail_service
+from gmail_mcp.server import mcp
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _extract_email_content(part: dict) -> tuple[str, str]:
     """Recursively extract (text, html) content from a MIME part tree."""
@@ -45,12 +45,15 @@ def _collect_attachments(part: dict) -> list[dict]:
     attachments: list[dict] = []
     body = part.get("body", {})
     if body.get("attachmentId"):
-        attachments.append({
-            "id": body["attachmentId"],
-            "filename": part.get("filename") or f"attachment-{body['attachmentId']}",
-            "mimeType": part.get("mimeType", "application/octet-stream"),
-            "size": body.get("size", 0),
-        })
+        attachments.append(
+            {
+                "id": body["attachmentId"],
+                "filename": part.get("filename")
+                or f"attachment-{body['attachmentId']}",
+                "mimeType": part.get("mimeType", "application/octet-stream"),
+                "size": body.get("size", 0),
+            }
+        )
     for sub in part.get("parts", []):
         attachments.extend(_collect_attachments(sub))
     return attachments
@@ -60,13 +63,18 @@ def _collect_attachments(part: dict) -> list[dict]:
 # Tools
 # ---------------------------------------------------------------------------
 
+
 @mcp.tool()
 def send_email(
     to: Annotated[list[str], "List of recipient email addresses"],
     subject: Annotated[str, "Email subject"],
-    body: Annotated[str, "Email body content (plain text, or fallback when htmlBody not provided)"],
+    body: Annotated[
+        str, "Email body content (plain text, or fallback when htmlBody not provided)"
+    ],
     html_body: Annotated[str | None, "HTML version of the email body"] = None,
-    mime_type: Annotated[str | None, "Content type: text/plain, text/html, or multipart/alternative"] = "text/plain",
+    mime_type: Annotated[
+        str | None, "Content type: text/plain, text/html, or multipart/alternative"
+    ] = "text/plain",
     cc: Annotated[list[str] | None, "List of CC recipients"] = None,
     bcc: Annotated[list[str] | None, "List of BCC recipients"] = None,
     thread_id: Annotated[str | None, "Thread ID to reply to"] = None,
@@ -98,9 +106,13 @@ def send_email(
 def draft_email(
     to: Annotated[list[str], "List of recipient email addresses"],
     subject: Annotated[str, "Email subject"],
-    body: Annotated[str, "Email body content (plain text, or fallback when htmlBody not provided)"],
+    body: Annotated[
+        str, "Email body content (plain text, or fallback when htmlBody not provided)"
+    ],
     html_body: Annotated[str | None, "HTML version of the email body"] = None,
-    mime_type: Annotated[str | None, "Content type: text/plain, text/html, or multipart/alternative"] = "text/plain",
+    mime_type: Annotated[
+        str | None, "Content type: text/plain, text/html, or multipart/alternative"
+    ] = "text/plain",
     cc: Annotated[list[str] | None, "List of CC recipients"] = None,
     bcc: Annotated[list[str] | None, "List of BCC recipients"] = None,
     thread_id: Annotated[str | None, "Thread ID to reply to"] = None,
@@ -125,10 +137,7 @@ def draft_email(
         message["threadId"] = thread_id
 
     result = (
-        gmail.users()
-        .drafts()
-        .create(userId="me", body={"message": message})
-        .execute()
+        gmail.users().drafts().create(userId="me", body={"message": message}).execute()
     )
     return f"Email draft created successfully with ID: {result['id']}"
 
