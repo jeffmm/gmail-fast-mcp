@@ -11,7 +11,7 @@ Place your Google Cloud OAuth client credentials at `~/.gmail-mcp/gcp-oauth.keys
 ### 2. Authenticate
 
 ```bash
-uv run python -m gmail_mcp auth
+uv run python -m gmail_fast_mcp auth
 ```
 
 This opens a browser for the OAuth flow and saves tokens to `~/.gmail-mcp/credentials.json`.
@@ -19,13 +19,13 @@ This opens a browser for the OAuth flow and saves tokens to `~/.gmail-mcp/creden
 For cloud environments with a custom callback URL:
 
 ```bash
-uv run python -m gmail_mcp auth https://your-domain.com/oauth2callback
+uv run python -m gmail_fast_mcp auth https://your-domain.com/oauth2callback
 ```
 
 ### 3. Run the Server
 
 ```bash
-uv run python -m gmail_mcp
+uv run python -m gmail_fast_mcp
 ```
 
 ### MCP Client Configuration
@@ -35,7 +35,7 @@ uv run python -m gmail_mcp
   "mcpServers": {
     "gmail": {
       "command": "uv",
-      "args": ["run", "--directory", "/path/to/gmail-fast-mcp", "python", "-m", "gmail_mcp"]
+      "args": ["run", "--directory", "/path/to/gmail-fast-mcp", "python", "-m", "gmail_fast_mcp"]
     }
   }
 }

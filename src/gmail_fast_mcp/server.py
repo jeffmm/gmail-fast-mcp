@@ -5,7 +5,7 @@ from fastmcp import FastMCP
 mcp = FastMCP("Gmail")
 
 # Import tool modules to trigger @mcp.tool decorator registration
-from gmail_mcp.tools import (  # noqa: E402, F401
+from gmail_fast_mcp.tools import (  # noqa: E402, F401
     attachment_ops,
     batch_ops,
     email_ops,

@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from gmail_mcp.gmail_service import get_gmail_service
-from gmail_mcp.server import mcp
-from gmail_mcp.tools.batch_ops import process_batches
+from gmail_fast_mcp.gmail_service import get_gmail_service
+from gmail_fast_mcp.server import mcp
+from gmail_fast_mcp.tools.batch_ops import process_batches
 
 
 @mcp.tool()

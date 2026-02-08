@@ -33,7 +33,7 @@ def get_gmail_service():
     if not CREDENTIALS_PATH.exists():
         raise RuntimeError(
             f"No credentials found at {CREDENTIALS_PATH}. "
-            "Run 'uv run python -m gmail_mcp auth' first."
+            "Run 'uv run python -m gmail_fast_mcp auth' first."
         )
 
     token_data = json.loads(CREDENTIALS_PATH.read_text())

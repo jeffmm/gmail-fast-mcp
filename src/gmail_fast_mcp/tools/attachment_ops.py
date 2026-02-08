@@ -6,8 +6,8 @@ import base64
 import os
 from typing import Annotated
 
-from gmail_mcp.gmail_service import get_gmail_service
-from gmail_mcp.server import mcp
+from gmail_fast_mcp.gmail_service import get_gmail_service
+from gmail_fast_mcp.server import mcp
 
 
 def _find_attachment_filename(part: dict, attachment_id: str) -> str | None:
