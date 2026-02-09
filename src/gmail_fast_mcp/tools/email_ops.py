@@ -2,42 +2,16 @@
 
 from __future__ import annotations
 
-import base64
 import math
 from typing import Annotated
 
-from gmail_fast_mcp.email_utils import create_email_message
+from gmail_fast_mcp.email_utils import create_email_message, extract_email_content
 from gmail_fast_mcp.gmail_service import get_gmail_service
 from gmail_fast_mcp.server import mcp
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-
-
-def _extract_email_content(part: dict) -> tuple[str, str]:
-    """Recursively extract (text, html) content from a MIME part tree."""
-    text = ""
-    html = ""
-
-    body = part.get("body", {})
-    data = body.get("data")
-    if data:
-        decoded = base64.urlsafe_b64decode(data).decode("utf-8", errors="replace")
-        mime = part.get("mimeType", "")
-        if mime == "text/plain":
-            text = decoded
-        elif mime == "text/html":
-            html = decoded
-
-    for sub in part.get("parts", []):
-        t, h = _extract_email_content(sub)
-        if t:
-            text += t
-        if h:
-            html += h
-
-    return text, html
 
 
 def _collect_attachments(part: dict) -> list[dict]:
@@ -169,7 +143,7 @@ def read_email(
     date = _header("date")
     thread_id = msg.get("threadId", "")
 
-    text, html = _extract_email_content(msg.get("payload", {}))
+    text, html = extract_email_content(msg.get("payload", {}))
     content = text or html or ""
     note = (
         "[Note: This email is HTML-formatted. Plain text version not available.]\n\n"

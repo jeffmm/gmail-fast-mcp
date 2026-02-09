@@ -1,4 +1,4 @@
-"""RFC 822 message construction using Python stdlib."""
+"""RFC 822 message construction and MIME parsing utilities."""
 
 from __future__ import annotations
 
@@ -10,6 +10,35 @@ from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+
+
+def extract_email_content(part: dict) -> tuple[str, str]:
+    """Recursively extract (text, html) content from a MIME part tree.
+
+    Walks the Gmail API message payload structure and decodes base64url
+    body data from text/plain and text/html parts.
+    """
+    text = ""
+    html = ""
+
+    body = part.get("body", {})
+    data = body.get("data")
+    if data:
+        decoded = base64.urlsafe_b64decode(data).decode("utf-8", errors="replace")
+        mime = part.get("mimeType", "")
+        if mime == "text/plain":
+            text = decoded
+        elif mime == "text/html":
+            html = decoded
+
+    for sub in part.get("parts", []):
+        t, h = extract_email_content(sub)
+        if t:
+            text += t
+        if h:
+            html += h
+
+    return text, html
 
 
 def validate_email(email: str) -> bool:
